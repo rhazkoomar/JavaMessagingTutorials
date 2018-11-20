@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.*" />
+
+
+	<beans:bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<beans:property name="showSql" value="false" />
+	</beans:bean>
+	
+	<bean id="jndiTemplate"
+		class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">com.sun.enterprise.naming.SerialInitContextFactory</prop>
+				<prop key="java.naming.factory.ul.pkgs">com.sun.enterprise.naming</prop>
+				<prop key="java.naming.factory.state">com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl</prop>
+				<prop key="org.omg.CORBA.ORBIntialHost">localhost</prop>
+				<prop key="org.omg.CORBA.ORBIntialPort">3700</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<poperty name="jndiTemplate" ref="jndiTemplate" />
+		<poperty name="jndiName" value="queue_connection_factory"/>
+	</bean>
+	<bean id="destination" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<poperty name="jndiTemplate" ref="jndiTemplate" />
+		<poperty name="jndiName" value="spring_jms_queue_destination" />
+	</bean>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<poperty name="connectionFactory" ref="connectionFactory" />
+		<poperty name="defaultDestination" ref="destination" />
+	</bean>
+	
+	
+	
+
+
+</beans>
